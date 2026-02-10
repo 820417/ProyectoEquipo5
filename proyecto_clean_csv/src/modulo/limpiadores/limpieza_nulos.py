@@ -1,6 +1,8 @@
 import pandas as pd
+from modulo.reportes import track_changes
 
 
+@track_changes
 def limpiar_nulos(df: pd.DataFrame) -> pd.DataFrame:
     if df is None:
         return None
