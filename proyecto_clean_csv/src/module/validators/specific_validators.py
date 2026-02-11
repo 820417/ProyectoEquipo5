@@ -15,11 +15,15 @@ class NullValidator(Validator):
     
 class DuplicateValidator(Validator):
 
+    def __init__(self, key_column: str = "Transaction ID") -> None:
+        self.key_column = key_column
+
     def validate(self, df: pd.DataFrame) -> Dict[str, Any]:
+        
         errors = {}
 
-        if df["Transaction ID"].duplicated().any():
-            errors["Transaction ID"] = "DUPLICATED_VALUES"
+        if df[self.key_column].duplicated().any():
+            errors[self.key_column] = "DUPLICATED_VALUES"
 
         return errors
     
