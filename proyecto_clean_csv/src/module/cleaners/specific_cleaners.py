@@ -1,8 +1,6 @@
 import pandas as pd
 from src.module.reports import track_changes
 
-#from .cleaners.protocol_cleaner import CleaningFunction
-
 
 @track_changes
 def remove_duplicate_rows(
