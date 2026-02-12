@@ -2,8 +2,8 @@ import pandas as pd
 from typing import Generator, Dict, Any
 #from contextlib import contextmanager
 
-path = "../../../examples/retail_store_sales.csv"
-def read_csv(path: str) -> pd.DataFrame:
+path = "proyecto_clean_csv/examples/ventas_cafe.csv"
+def read_csv_file(path: str) -> pd.DataFrame:
     try:
         df = pd.read_csv(path,
                          sep=None,
