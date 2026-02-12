@@ -1,6 +1,5 @@
 import pandas as pd
 from src.module.reports import track_changes
-from .protocol_cleaner import CleaningFunction
 
 
 @track_changes
