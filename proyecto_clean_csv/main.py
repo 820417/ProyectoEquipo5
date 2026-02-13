@@ -1,5 +1,12 @@
 from src.module.pipelines import DataPipelineOrchestrator
+from src.module.reports.logging_config import setup_logging
+import logging
 
+logger= logging.getLogger(__name__)
+
+def main():
+    setup_logging("INFO", "app_logs.txt")
+    logger.info("Inicio del pipeline")
 
 def main():
     path = "examples/ventas_cafe.csv"
