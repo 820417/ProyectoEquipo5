@@ -1,24 +1,32 @@
+import json
+from collections import defaultdict
+from pathlib import Path
+from typing import Any
+
 import pandas as pd
-from typing import Any, Dict
-from src.module.cleaners.remove_duplicates import limpiador_duplicados_por_id
-from src.module.cleaners.remove_nulls import limpiar_nulos
+from src.module.cleaners.cleaner_dispatcher import DataCleanerDispatcher
 from src.module.data_models.transform.fill_data import impute_amounts
 from src.module.read import get_csv_reader
-from src.module.validators import Validator, NullValidator, DuplicateValidator, TypeValidator
-from collections import defaultdict
+from src.module.validators import DuplicateValidator, NullValidator, TypeValidator, Validator
 
 
 class DataPipelineOrchestrator:
-    def __init__(self, path: str):
+    def __init__(self, path: str, config_path: str):
         self.path = path
-    
+        self.config = self._load_config(config_path)
+
+    def _load_config(self, config_path: str) -> dict:
+        """Lee el archivo config.json y lo convierte en un diccionario."""
+        with Path(config_path).open() as file:
+            return json.load(file)
+
     def run(self):
         df = self._read_file()
         print(df.info())
         df = self._process(df)
         self._report(df)
         print(df.head())
-    
+
 
     def _read_file(self) -> pd.DataFrame:
         reader = get_csv_reader(self.path)
@@ -28,14 +36,14 @@ class DataPipelineOrchestrator:
         diccionario = self._validacion(df)
         print(diccionario)
         df = self._transformacion(df)
-        df = self._limpieza(df)
+        df = self._limpieza(df, diccionario)
         return df
 
     def _report(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
 
 
-    def _validacion(self, df: pd.DataFrame) -> Dict[str, Any]:
+    def _validacion(self, df: pd.DataFrame) -> dict[str, Any]:
         validators: list[Validator]= [
             NullValidator(),
             DuplicateValidator(),
@@ -56,9 +64,8 @@ class DataPipelineOrchestrator:
         df = impute_amounts(df)
         # df = add_quarter_column(df)
         return df
-    
-    def _limpieza(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = limpiador_duplicados_por_id(df)
-        df = limpiar_nulos(df)
+
+    def _limpieza(self, df: pd.DataFrame, error_report: dict[str, list]) -> pd.DataFrame:
+        dispatcher = DataCleanerDispatcher(self.config)
+        df = dispatcher.clean(df, error_report)
         return df
-    
