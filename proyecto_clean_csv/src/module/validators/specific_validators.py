@@ -23,7 +23,7 @@ class NullValidator(Validator):
                 errors[col] = "NULL_VALUES"
 
         return errors
-    
+
 class DuplicateValidator(Validator):
 
     def __init__(self, key_column: str = "Transaction ID") -> None:
@@ -39,7 +39,7 @@ class DuplicateValidator(Validator):
         :return: Diccionario con los errores encontrados.
         :rtype: Dict[str, Any]
         """
-        
+
         errors = {}
 
         if df[self.key_column].duplicated().any():
@@ -77,5 +77,7 @@ class TypeValidator(Validator):
         errors = {}
 
         for col in df.columns:
-            if not isinstance(type(col), self.types[col]):
+            if str(df[col].dtype) != self.types[col]:
                 errors[col] = "TYPE_ERROR"
+
+        return errors
