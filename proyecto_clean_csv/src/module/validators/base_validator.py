@@ -1,9 +1,6 @@
-from typing import Any, Dict
+from typing import Any, Dict, Protocol
 import pandas as pd
-from abc import ABC, abstractmethod
 
-class Validator:
-
-    @abstractmethod
+class Validator(Protocol):
     def validate(self, df: pd.DataFrame) -> Dict[str, Any]:
-        pass
+        ...

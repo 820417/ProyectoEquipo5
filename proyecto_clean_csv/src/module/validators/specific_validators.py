@@ -4,8 +4,19 @@ from typing import Any, Dict
 
 
 class NullValidator(Validator):
-
+    """
+    Validador para detectar valores nulos en el DataFrame.
+    """
     def validate(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Recorre cada columna del DataFrame y si encuentra valores nulos agrega un error
+        al diccionario de errores con el nombre de la columna y el mensaje "NULL_VALUES".
+
+        :param df: DataFrame de pandas a validar.
+        :type df: pd.DataFrame 
+        :return: Diccionario con los errores encontrados.
+        :rtype: Dict[str, Any]
+        """
         errors = {}
         for col in df.columns:
             if df[col].isnull().any():
@@ -19,6 +30,15 @@ class DuplicateValidator(Validator):
         self.key_column = key_column
 
     def validate(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Comprueba si la columna "Transaction ID" del DataFrame contiene valores duplicados.
+        Si encuentra, agrega un error al diccionario de errores con el nombre de la columna y el mensaje "DUPLICATED_VALUES".
+
+        :param df: DataFrame de pandas a validar.
+        :type df: pd.DataFrame
+        :return: Diccionario con los errores encontrados.
+        :rtype: Dict[str, Any]
+        """
         
         errors = {}
 
@@ -30,6 +50,9 @@ class DuplicateValidator(Validator):
 class TypeValidator(Validator):
 
     def __init__(self):
+        """
+        Inicializa el validador de tipos con un diccionario que mapea cada columna a su tipo esperado.
+        """
         self.types = {
             "Transaction ID": "str",
             "Item": "str",
@@ -42,8 +65,17 @@ class TypeValidator(Validator):
         }
 
     def validate(self, df: pd.DataFrame) -> Dict[str, Any]:
+        """
+        Recorre cada columna del DataFrame y verifica si el tipo de datos coincide con el tipo esperado.
+        Si el tipo no coincide, agrega un error al diccionario de errores con el nombre de la columna y el mensaje "TYPE_ERROR".
+
+        :param df: DataFrame de pandas a validar.
+        :type df: pd.DataFrame
+        :return: Diccionario con los errores encontrados.
+        :rtype: Dict[str, Any]
+        """
         errors = {}
 
         for col in df.columns:
-            if not isinstance(type(col), self.tipos[col]):
+            if not isinstance(type(col), self.types[col]):
                 errors[col] = "TYPE_ERROR"
