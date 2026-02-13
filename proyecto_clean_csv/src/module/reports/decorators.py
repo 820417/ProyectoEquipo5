@@ -1,5 +1,7 @@
 import pandas as pd
+import logging
 
+logger=logging.getLogger(__name__)
 
 def track_changes(func):
 
@@ -13,9 +15,16 @@ def track_changes(func):
             filas_despues = len(resultado)
             diff = filas_antes - filas_despues
             if diff > 0:
-                print(f"[LOG] {func.__name__}: Se han eliminado {diff} filas.")
+                logger.info(
+                    "%s: Se han eliminado %d filas.",
+                    func.__name__,
+                    diff
+                )
             elif diff == 0:
-                print(f"[LOG] {func.__name__}: Sin cambios en el número de filas.")
+                logger.info(
+                    "%s: Sin cambios en el número de filas.",
+                    func.__name__
+                )
 
         return resultado
     return wrapper
