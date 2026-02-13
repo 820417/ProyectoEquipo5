@@ -1,6 +1,13 @@
 from .base_validator import Validator
 import pandas as pd
 from typing import Any, Dict
+from src.module.data_models.schema import (
+    COLUMN_TYPES,
+    TRANSACTION_ID,
+    DUPLICATED_VALUES_ERROR,
+    NULL_VALUES_ERROR,
+    TYPE_ERROR,
+)
 
 
 class NullValidator(Validator):
@@ -13,26 +20,27 @@ class NullValidator(Validator):
         al diccionario de errores con el nombre de la columna y el mensaje "NULL_VALUES".
 
         :param df: DataFrame de pandas a validar.
-        :type df: pd.DataFrame 
+        :type df: pd.DataFrame
         :return: Diccionario con los errores encontrados.
         :rtype: Dict[str, Any]
         """
         errors = {}
         for col in df.columns:
             if df[col].isnull().any():
-                errors[col] = "NULL_VALUES"
+                errors.setdefault(col, []).append(NULL_VALUES_ERROR)
 
         return errors
 
 class DuplicateValidator(Validator):
 
-    def __init__(self, key_column: str = "Transaction ID") -> None:
+    def __init__(self, key_column: str = TRANSACTION_ID) -> None:
         self.key_column = key_column
 
     def validate(self, df: pd.DataFrame) -> Dict[str, Any]:
         """
         Comprueba si la columna "Transaction ID" del DataFrame contiene valores duplicados.
-        Si encuentra, agrega un error al diccionario de errores con el nombre de la columna y el mensaje "DUPLICATED_VALUES".
+        Si encuentra, agrega un error al diccionario de errores con el nombre de la columna y
+        el mensaje "DUPLICATED_VALUES".
 
         :param df: DataFrame de pandas a validar.
         :type df: pd.DataFrame
@@ -43,31 +51,23 @@ class DuplicateValidator(Validator):
         errors = {}
 
         if df[self.key_column].duplicated().any():
-            errors[self.key_column] = "DUPLICATED_VALUES"
+            errors.setdefault(self.key_column, []).append(DUPLICATED_VALUES_ERROR)
 
         return errors
-    
+
 class TypeValidator(Validator):
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
-        Inicializa el validador de tipos con un diccionario que mapea cada columna a su tipo esperado.
+        Inicializa validador de tipos con un diccionario que mapea cada columna a su tipo esperado.
         """
-        self.types = {
-            "Transaction ID": "str",
-            "Item": "str",
-            "Quantity": "int",
-            "Price Per Unit": "float",
-            "Total Spent": "float",
-            "Payment Method": "str",
-            "Location": "str",
-            "Transaction Date": "datetime64[ns]"
-        }
+        self._types = COLUMN_TYPES
 
     def validate(self, df: pd.DataFrame) -> Dict[str, Any]:
         """
-        Recorre cada columna del DataFrame y verifica si el tipo de datos coincide con el tipo esperado.
-        Si el tipo no coincide, agrega un error al diccionario de errores con el nombre de la columna y el mensaje "TYPE_ERROR".
+        Recorre cada columna del DataFrame y verifica si los valores pueden ser convertidos al tipo
+        esperado. Si encuentra valores que no pueden ser convertidos, agrega un error al diccionario
+        de errores con el nombre de la columna y el mensaje "TYPE_ERROR".
 
         :param df: DataFrame de pandas a validar.
         :type df: pd.DataFrame
@@ -76,8 +76,19 @@ class TypeValidator(Validator):
         """
         errors = {}
 
-        for col in df.columns:
-            if str(df[col].dtype) != self.types[col]:
-                errors[col] = "TYPE_ERROR"
+        for col, expected_type in self._types.items():
+
+            if col not in df.columns:
+                continue
+
+            if expected_type in ["int", "float"]:
+                converted = pd.to_numeric(df[col], errors="coerce")
+                if converted.isna().sum() > df[col].isna().sum():
+                    errors.setdefault(col, []).append(TYPE_ERROR)
+
+            elif expected_type == "datetime":
+                converted = pd.to_datetime(df[col], errors="coerce")
+                if converted.isna().sum() > df[col].isna().sum():
+                    errors.setdefault(col, []).append(TYPE_ERROR)
 
         return errors

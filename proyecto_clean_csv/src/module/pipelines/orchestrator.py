@@ -5,7 +5,6 @@ from typing import Any
 
 import pandas as pd
 from src.module.cleaners.cleaner_dispatcher import DataCleanerDispatcher
-from src.module.data_models.transform.fill_data import impute_amounts
 from src.module.read import get_csv_reader
 from src.module.validators import DuplicateValidator, NullValidator, TypeValidator, Validator
 
@@ -22,16 +21,14 @@ class DataPipelineOrchestrator:
 
     def run(self):
         df = self._read_file()
-        print(df.info())
         df = self._process(df)
         self._report(df)
-        print(df.head())
-
+        print(df.info())
 
     def _read_file(self) -> pd.DataFrame:
         reader = get_csv_reader(self.path)
         return reader.read(self.path)
-    
+
     def _process(self, df: pd.DataFrame) -> pd.DataFrame:
         diccionario = self._validacion(df)
         print(diccionario)
@@ -55,13 +52,12 @@ class DataPipelineOrchestrator:
         for validator in validators:
             errors = validator.validate(df)
 
-            for column, error in errors.items():
-                all_errors[column].append(error)
+            for column, error_list in errors.items():
+                all_errors[column].extend(error_list)
 
         return dict(all_errors)
 
     def _transformacion(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = impute_amounts(df)
         # df = add_quarter_column(df)
         return df
 
