@@ -1,6 +1,6 @@
 import pandas as pd
 from module.reports import track_changes
-import math
+
 
 @track_changes
 def tercio_del_año(df: pd.DataFrame, columna_fecha: str="Transaction Date", columna_salida: str="Tercio del año")-> pd.DataFrame:
@@ -22,7 +22,9 @@ def tercio_del_año(df: pd.DataFrame, columna_fecha: str="Transaction Date", col
 
     meses=df[columna_fecha].dt.month
 
-    tercio_del_año=math.ceil(meses/4)
+    tercio_del_año=((meses - 1) // 4 + 1)
 
     df["Tercio del año"]=tercio_del_año.map({1: "T1", 2:"T2", 3:"T3"})
+
+    return df
     

@@ -1,0 +1,12 @@
+{
+    "duplicates": {
+        "apply": true,
+        "keep": "last",
+        "columns": ["Transaction ID"]
+    },
+    "nulls": {
+        "apply": true,
+        "fill_value": "NO_PROPORCIONADO",
+        "columns": ["Category", "Payment Method"]
+    }
+}
