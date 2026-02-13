@@ -2,9 +2,10 @@ from src.module.pipelines import DataPipelineOrchestrator
 
 
 def main():
-    path = "proyecto_clean_csv/examples/ventas_cafe.csv"
+    path = "examples/ventas_cafe.csv"
+    config_path = "src/module/data_models/config.json"
 
-    pipeline = DataPipelineOrchestrator(path)
+    pipeline = DataPipelineOrchestrator(path, config_path)
     pipeline.run()
 
 if __name__ == "__main__":
