@@ -1,8 +1,0 @@
-import pandas as pd
-from src.module.reports import track_changes
-
-@track_changes
-def limpiador_duplicados_por_id(
-    df: pd.DataFrame,
-    keep: str = "first") -> pd.DataFrame:
-    return df.drop_duplicates(subset=["Transaction ID"], keep=keep).reset_index(drop=True)

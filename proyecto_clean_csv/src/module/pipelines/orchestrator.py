@@ -5,6 +5,7 @@ from src.module.cleaners.remove_nulls import limpiar_nulos
 from src.module.data_models.transform.fill_data import impute_amounts
 from src.module.read import get_csv_reader
 from src.module.validators import Validator, NullValidator, DuplicateValidator, TypeValidator
+from collections import defaultdict
 
 
 class DataPipelineOrchestrator:
@@ -13,6 +14,7 @@ class DataPipelineOrchestrator:
     
     def run(self):
         df = self._read_file()
+        print(df.info())
         df = self._process(df)
         self._report(df)
         print(df.head())
@@ -23,7 +25,8 @@ class DataPipelineOrchestrator:
         return reader.read(self.path)
     
     def _process(self, df: pd.DataFrame) -> pd.DataFrame:
-        # self._validacion(df)
+        diccionario = self._validacion(df)
+        print(diccionario)
         df = self._transformacion(df)
         df = self._limpieza(df)
         return df
@@ -39,13 +42,15 @@ class DataPipelineOrchestrator:
             TypeValidator(),
         ]
 
-        all_errors = {}
+        all_errors: dict[str, list] = defaultdict(list)
 
         for validator in validators:
             errors = validator.validate(df)
-            all_errors.update(errors)
 
-        return all_errors
+            for column, error in errors.items():
+                all_errors[column].append(error)
+
+        return dict(all_errors)
 
     def _transformacion(self, df: pd.DataFrame) -> pd.DataFrame:
         df = impute_amounts(df)
@@ -57,5 +62,3 @@ class DataPipelineOrchestrator:
         df = limpiar_nulos(df)
         return df
     
-
-
