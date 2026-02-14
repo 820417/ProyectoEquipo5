@@ -20,7 +20,7 @@ class DataPipelineOrchestrator:
         with Path(config_path).open() as file:
             return json.load(file)
 
-    def run(self):
+    def run(self) -> None:
         df = self._read_file()
         print(df.info())
         df = self._process(df)
@@ -31,13 +31,12 @@ class DataPipelineOrchestrator:
     def _read_file(self) -> pd.DataFrame:
         reader = get_csv_reader(self.path)
         return reader.read(self.path)
-    
+
     def _process(self, df: pd.DataFrame) -> pd.DataFrame:
         diccionario = self._validacion(df)
         print(diccionario)
-        df = self._transformacion(df)
         df = self._limpieza(df, diccionario)
-        return df
+        return self._transformacion(df)
 
     def _report(self, df: pd.DataFrame) -> pd.DataFrame:
         return df
@@ -67,5 +66,4 @@ class DataPipelineOrchestrator:
 
     def _limpieza(self, df: pd.DataFrame, error_report: dict[str, list]) -> pd.DataFrame:
         dispatcher = DataCleanerDispatcher(self.config)
-        df = dispatcher.clean(df, error_report)
-        return df
+        return dispatcher.clean(df, error_report)

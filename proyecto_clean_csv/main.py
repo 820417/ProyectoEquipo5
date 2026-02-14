@@ -1,6 +1,7 @@
+import logging
+
 from src.module.pipelines import DataPipelineOrchestrator
 from src.module.reports.logging_config import setup_logging
-import logging
 
 logger= logging.getLogger(__name__)
 
