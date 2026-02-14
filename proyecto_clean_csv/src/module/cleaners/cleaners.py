@@ -1,6 +1,7 @@
 from typing import Any, Literal
 
 import pandas as pd
+import numpy as np
 from src.module.reports import track_changes
 
 
@@ -44,6 +45,45 @@ def fill_null_values(
 
     return df_clean
 
+@track_changes
+def impute_amounts(
+    df: pd.DataFrame
+) -> pd.DataFrame:
+    """
+    Rellena los valores faltantes en las columnas "Quantity", "Price Per Unit" y "Total Spent"
+    utilizando las relaciones matemáticas entre ellas.
+    Si un valor no se puede calcular, se deja como NaN.
+
+    :param df: El DataFrame a procesar.
+    :rtype: pd.DataFrame
+    :return: El DataFrame con los valores imputados.
+    :rtype: pd.DataFrame
+    """
+    if df is None:
+        raise ValueError("DataFrame cannot be None")
+
+    cols = ["Quantity", "Price Per Unit", "Total Spent"]
+
+    for col in cols:
+        if col not in df.columns:
+            raise ValueError(f"Column '{col}' not found in DataFrame")
+
+    df["Total Spent"] = (
+        df["Total Spent"]
+        .fillna(df["Quantity"] * df["Price Per Unit"])
+    )
+    df["Quantity"] = (
+        df["Quantity"]
+        .fillna(df["Total Spent"] / df["Price Per Unit"])
+        .replace(0, np.nan)
+    )
+    df["Price Per Unit"] = (
+        df["Price Per Unit"]
+        .fillna(df["Total Spent"] / df["Quantity"])
+        .replace(0, np.nan)
+    )
+
+    return df
 
 @track_changes
 def drop_null_rows(

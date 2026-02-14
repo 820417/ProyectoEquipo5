@@ -1,7 +1,7 @@
 import os
 
 # Carpetas y archivos a excluir
-EXCLUDE_DIRS = {".venv", "venv", ".git", "__pycache__", ".pytest_cache"}
+EXCLUDE_DIRS = {".venv", "venv", ".git", "__pycache__", ".pytest_cache", ".ruff_cache"}
 EXCLUDE_FILES = {".DS_Store"}
 
 # Profundidad máxima (None = sin límite)
