@@ -1,6 +1,7 @@
-import pandas as pd
-from typing import Protocol
 import csv
+from typing import Protocol
+
+import pandas as pd
 
 
 class ReaderCSV(Protocol) :
@@ -23,7 +24,7 @@ class ReaderCSVPandas(ReaderCSV):
     def read(self, path: str) -> pd.DataFrame:
         """
         Lee un archivo CSV y devuelve un DataFrame de pandas.
-        
+
         :param path: Ruta del archivo CSV.
         :type path: str
         :return: DataFrame de pandas con los datos del CSV.
@@ -37,7 +38,7 @@ class ReaderCSVPandas(ReaderCSV):
             return df
 
         except FileNotFoundError as e:
-            raise FileNotFoundError("El archivo no existe.") from e
+            raise FileNotFoundError("Archivo CSV no econtrado.") from e
         except Exception as e:
             raise Exception("Error al leer el CSV") from e
 
@@ -55,9 +56,15 @@ class ReaderCSVGenerator(ReaderCSV):
         :return: DataFrame de pandas con los datos del CSV.
         :rtype: pd.DataFrame
         """
-        filas = self._read_generator(path)
-        return pd.DataFrame(filas)
-        
+        try:
+            filas = self._read_generator(path)
+            return pd.DataFrame(filas)
+
+        except FileNotFoundError as e:
+            raise FileNotFoundError("Archivo CSV no econtrado.") from e
+        except Exception as e:
+            raise Exception("Error al leer el CSV") from e
+
     def _read_generator(self, path: str):
         """
         Generador que lee un archivo CSV y devuelve filas en forma de diccionarios.
@@ -67,7 +74,6 @@ class ReaderCSVGenerator(ReaderCSV):
         :yield: Diccionarios con los datos de cada fila.
         :rtype: dict
         """
-        with open(path, 'r', encoding='utf-8') as fichero:
+        with open(path, encoding='utf-8') as fichero:
             lector = csv.DictReader(fichero)
-            for linea in lector:
-                yield linea
+            yield from lector

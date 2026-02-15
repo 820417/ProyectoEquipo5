@@ -1,19 +1,26 @@
 import json
 from collections import defaultdict
 from pathlib import Path
-from typing import Any
 
 import pandas as pd
+
 from module.cleaners.cleaner_dispatcher import DataCleanerDispatcher
 from module.read import get_csv_reader
-from module.validators import DuplicateValidator, NullValidator, TypeValidator, Validator
 from module.reports import csv_exporter
-from module.transforms import add_category_column, add_year_third_column, add_weekday_column
 from module.reports.plot_generator import BarPlot
+from module.transforms import add_category_column, add_weekday_column, add_year_third_column
+from module.validators import DuplicateValidator, NullValidator, TypeValidator, Validator
 
 
 class DataPipelineOrchestrator:
     def __init__(self, path: str, config_path: str, base_dir: Path):
+        """
+        Orquestador del pipeline
+
+        :param path: Ruta del archivo CSV a procesar.
+        :param config_path: Ruta del archivo de configuración JSON.
+        :param base_dir: Ruta base del proyecto para generar archivos de salida.
+        """
         self.path = path
         self.name = self.path.stem
         self._base_dir = Path(base_dir)
@@ -41,11 +48,23 @@ class DataPipelineOrchestrator:
 
     def _report(self, df: pd.DataFrame) -> pd.DataFrame:
         csv_exporter(self, df)
-        generate_plots(self, df)
+        self._generate_plots(df)
         return df
 
 
-    def _validacion(self, df: pd.DataFrame) -> dict[str, Any]:
+    def _validacion(self, df: pd.DataFrame) -> dict[str, list[str]]:
+        """
+        Realiza la validación del DataFrame utilizando los validadores definidos.
+        Si el DataFrame está vacío, devuelve un error indicando que no contiene filas.
+
+        :param df: DataFrame de pandas a validar.
+        :type df: pd.DataFrame
+        :return: Diccionario con los errores encontrados de cada columna.
+        :rtype: dict[str, list[str]]
+        """
+        if df.empty:
+            return {"__dataframe__": ["El DataFrame no contiene filas"]}
+
         validators: list[Validator]= [
             NullValidator(),
             DuplicateValidator(),
@@ -72,12 +91,12 @@ class DataPipelineOrchestrator:
         dispatcher = DataCleanerDispatcher(self.config)
         return dispatcher.clean(df, error_report)
 
-def generate_plots(self, df: pd.DataFrame):
-    plots = [
-        BarPlot(df, self._base_dir, f"{self.name}", column="Category", title="Categorías", xlabel="Categoría", ylabel="Cantidad")
-        # BarPlot(df, self._base_dir, f"{self.name}", column="Tercio del año", title="Tercio del Año", xlabel="Tercio del Año", ylabel="Cantidad")
-        # BarPlot(df, self._base_dir, f"{self.name}", column="Weekday", title="Día de la Semana", xlabel="Día de la Semana", ylabel="Cantidad")
-    ]
+    def _generate_plots(self, df: pd.DataFrame):
+        plots = [
+            BarPlot(df, self._base_dir, f"{self.name}", column="Category", title="Categorías", xlabel="Categoría", ylabel="Cantidad")
+            # BarPlot(df, self._base_dir, f"{self.name}", column="Tercio del año", title="Tercio del Año", xlabel="Tercio del Año", ylabel="Cantidad")
+            # BarPlot(df, self._base_dir, f"{self.name}", column="Weekday", title="Día de la Semana", xlabel="Día de la Semana", ylabel="Cantidad")
+        ]
 
-    for plot in plots:
-        plot.plot()
+        for plot in plots:
+            plot.plot()

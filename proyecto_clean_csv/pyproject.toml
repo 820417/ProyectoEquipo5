@@ -26,6 +26,7 @@ select = [
     "N",   # pep8-naming
     "UP",  # pyupgrade
 ]
+exclude = [".venv"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

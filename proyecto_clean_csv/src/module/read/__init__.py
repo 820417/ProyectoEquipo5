@@ -1,6 +1,5 @@
-from .reader import ReaderCSV
 from .csv_reader_selector import get_csv_reader
-
+from .reader import ReaderCSV
 
 __all__ = [
     "ReaderCSV",

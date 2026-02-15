@@ -1,6 +1,7 @@
 # src/module/reports/plot_generator.py
-from pathlib import Path
 import logging
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -11,7 +12,7 @@ class BasePlot:
     def __init__(self, df: pd.DataFrame, base_dir: Path, name: str):
         """
         Clase base para generar gráficos.
-        
+
         :param df: DataFrame con los datos
         :param base_dir: raíz del proyecto (para crear generated/plots)
         :param name: nombre base del plot (ej: 'category_plot')
@@ -76,7 +77,7 @@ class BarPlot(BasePlot):
 
         counts = self.df[self.column].value_counts()
         fig, ax = plt.subplots(figsize=(8, 6))
-        bars = counts.plot(kind='bar', ax=ax, color=self.color)
+        counts.plot(kind='bar', ax=ax, color=self.color)
 
         # Añadir etiquetas sobre cada barra
         ax.bar_label(ax.containers[0], fontsize=10)
