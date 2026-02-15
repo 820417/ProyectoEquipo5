@@ -41,6 +41,6 @@ def add_year_third_column(
 
     year_third_numeric = ((months - 1) // 4 + 1)
 
-    df[output_column] = year_third_numeric({1: "T1", 2:"T2", 3:"T3"})
+    df[output_column] = year_third_numeric.map({1: "T1", 2:"T2", 3:"T3"})
 
     return df
