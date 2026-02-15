@@ -1,0 +1,10 @@
+{
+    "python.testing.pytestArgs": [
+        "proyecto_clean_csv"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.analysis.extraPaths": [
+        "./proyecto_clean_csv"
+    ]
+}
