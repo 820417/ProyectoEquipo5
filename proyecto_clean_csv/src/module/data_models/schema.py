@@ -30,3 +30,16 @@ NUMERIC_COLUMNS = [
     "Price Per Unit",
     "Total Spent"
 ]
+
+ITEM_TO_CATEGORY: dict[str, str] = {
+    # Drinks
+    "Coffee": "drink",
+    "Tea": "drink",
+    "Juice": "drink",
+    "Smoothie": "drink",
+    # Food
+    "Cake": "food",
+    "Cookie": "food",
+    "Salad": "food",
+    "Sandwich": "food",
+}
