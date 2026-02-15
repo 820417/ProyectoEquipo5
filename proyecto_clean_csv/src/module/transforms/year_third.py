@@ -6,7 +6,7 @@ from module.reports import track_changes
 def add_year_third_column(
     df: pd.DataFrame,
     date_column: str="Transaction Date",
-    output_column: str="Tercio del año"
+    output_column: str="Year third"
 )-> pd.DataFrame:
     """
     Añade una columna indicando el tercio del año en el que se produce cada transacción
