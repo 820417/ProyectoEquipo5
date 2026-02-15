@@ -4,14 +4,19 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-from src.module.cleaners.cleaner_dispatcher import DataCleanerDispatcher
-from src.module.read import get_csv_reader
-from src.module.validators import DuplicateValidator, NullValidator, TypeValidator, Validator
+from module.cleaners.cleaner_dispatcher import DataCleanerDispatcher
+from module.read import get_csv_reader
+from module.validators import DuplicateValidator, NullValidator, TypeValidator, Validator
+from module.reports import csv_exporter
+from module.transforms import add_category_column, add_year_third_column, add_weekday_column
+from module.reports.plot_generator import BarPlot
 
 
 class DataPipelineOrchestrator:
-    def __init__(self, path: str, config_path: str):
+    def __init__(self, path: str, config_path: str, base_dir: Path):
         self.path = path
+        self.name = self.path.stem
+        self._base_dir = Path(base_dir)
         self.config = self._load_config(config_path)
 
     def _load_config(self, config_path: str) -> dict:
@@ -23,19 +28,20 @@ class DataPipelineOrchestrator:
         df = self._read_file()
         df = self._process(df)
         self._report(df)
-        print(df.info())
 
     def _read_file(self) -> pd.DataFrame:
         reader = get_csv_reader(self.path)
         return reader.read(self.path)
 
     def _process(self, df: pd.DataFrame) -> pd.DataFrame:
-        diccionario = self._validacion(df)
-        print(diccionario)
-        df = self._limpieza(df, diccionario)
-        return self._transformacion(df)
+        errors_dict = self._validacion(df)
+        df = self._limpieza(df, errors_dict)
+        df = self._transformacion(df)
+        return df
 
     def _report(self, df: pd.DataFrame) -> pd.DataFrame:
+        csv_exporter(self, df)
+        generate_plots(self, df)
         return df
 
 
@@ -57,9 +63,21 @@ class DataPipelineOrchestrator:
         return dict(all_errors)
 
     def _transformacion(self, df: pd.DataFrame) -> pd.DataFrame:
-        # df = add_quarter_column(df)
+        # df = add_year_third_column(df)
+        # df = add_weekday_column(df)
+        df = add_category_column(df)
         return df
 
     def _limpieza(self, df: pd.DataFrame, error_report: dict[str, list]) -> pd.DataFrame:
         dispatcher = DataCleanerDispatcher(self.config)
         return dispatcher.clean(df, error_report)
+
+def generate_plots(self, df: pd.DataFrame):
+    plots = [
+        BarPlot(df, self._base_dir, f"{self.name}", column="Category", title="Categorías", xlabel="Categoría", ylabel="Cantidad")
+        # BarPlot(df, self._base_dir, f"{self.name}", column="Tercio del año", title="Tercio del Año", xlabel="Tercio del Año", ylabel="Cantidad")
+        # BarPlot(df, self._base_dir, f"{self.name}", column="Weekday", title="Día de la Semana", xlabel="Día de la Semana", ylabel="Cantidad")
+    ]
+
+    for plot in plots:
+        plot.plot()

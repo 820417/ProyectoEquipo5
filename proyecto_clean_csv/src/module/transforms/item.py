@@ -1,6 +1,6 @@
 import pandas as pd
-from reports.decorators import track_changes
-from data_models.schema import ITEM_TO_CATEGORY
+from module.reports import track_changes
+from module.data_models.schema import ITEM_TO_CATEGORY
 
 @track_changes
 def add_category_column(

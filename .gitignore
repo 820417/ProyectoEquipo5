@@ -10,3 +10,6 @@ __pycache__/
 
 #packing
 *.egg-info/
+
+# generated files
+generated/

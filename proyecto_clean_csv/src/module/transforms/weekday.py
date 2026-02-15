@@ -1,5 +1,5 @@
 import pandas as pd
-from reports.decorators import track_changes
+from module.reports import track_changes
 
 @track_changes
 def add_weekday_column(

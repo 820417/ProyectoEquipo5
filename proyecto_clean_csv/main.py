@@ -15,7 +15,7 @@ def main():
     path = BASE_DIR / "examples" / "ventas_cafe.csv"
     config_path = BASE_DIR / "src" / "module" / "data_models" / "config.json"
 
-    pipeline = DataPipelineOrchestrator(path, config_path)
+    pipeline = DataPipelineOrchestrator(path, config_path, BASE_DIR)
     pipeline.run()
 
 if __name__ == "__main__":
