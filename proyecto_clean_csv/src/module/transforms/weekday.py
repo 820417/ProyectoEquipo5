@@ -6,7 +6,7 @@ def add_weekday_column(
     df: pd.DataFrame,
     date_column: str= "Transaction Date",
     weekday_column: str="Weekday"
-)-> pd.DateFrame:
+)-> pd.DataFrame:
     """
     Añade una columna indicando el nombre del día de la semana de cada fecha de transacción 
     (e.g., Monday, Tuesday, etc.).
