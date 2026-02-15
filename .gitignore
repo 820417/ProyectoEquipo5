@@ -1,3 +1,4 @@
+.venv/
 venv/
 
 # Cache
@@ -6,3 +7,6 @@ __pycache__/
 
 # Logs
 *log.txt
+
+#packing
+*.egg-info/
