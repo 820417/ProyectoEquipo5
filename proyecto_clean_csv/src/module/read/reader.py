@@ -1,6 +1,7 @@
-import pandas as pd
-from typing import Protocol
 import csv
+from typing import Protocol
+
+import pandas as pd
 
 
 class ReaderCSV(Protocol) :
@@ -37,7 +38,7 @@ class ReaderCSVPandas(ReaderCSV):
             return df
 
         except FileNotFoundError as e:
-            raise FileNotFoundError("El archivo no existe.") from e
+            raise FileNotFoundError("Archivo CSV no econtrado.") from e
         except Exception as e:
             raise Exception("Error al leer el CSV") from e
 
@@ -55,8 +56,19 @@ class ReaderCSVGenerator(ReaderCSV):
         :return: DataFrame de pandas con los datos del CSV.
         :rtype: pd.DataFrame
         """
+<<<<<<< HEAD
         filas = self._read_generator(path)
         return pd.DataFrame(filas)
+=======
+        try:
+            filas = self._read_generator(path)
+            return pd.DataFrame(filas)
+
+        except FileNotFoundError as e:
+            raise FileNotFoundError("Archivo CSV no econtrado.") from e
+        except Exception as e:
+            raise Exception("Error al leer el CSV") from e
+>>>>>>> 36392c80d75d4a26104a2663ff30862cafaad26e
 
     def _read_generator(self, path: str):
         """

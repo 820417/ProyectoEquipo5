@@ -1,5 +1,3 @@
-from typing import Any
-
 import pandas as pd
 
 from module.data_models.schema import (
@@ -17,7 +15,7 @@ class NullValidator(Validator):
     """
     Validador para detectar valores nulos en el DataFrame.
     """
-    def validate(self, df: pd.DataFrame) -> dict[str, Any]:
+    def validate(self, df: pd.DataFrame) -> dict[str, list[str]]:
         """
         Recorre cada columna del DataFrame y si encuentra valores nulos agrega un error
         al diccionario de errores con el nombre de la columna y el mensaje "NULL_VALUES".
@@ -25,7 +23,7 @@ class NullValidator(Validator):
         :param df: DataFrame de pandas a validar.
         :type df: pd.DataFrame
         :return: Diccionario con los errores encontrados.
-        :rtype: Dict[str, Any]
+        :rtype: dict[str, list[str]]
         """
         errors = {}
         for col in df.columns:
@@ -37,9 +35,9 @@ class NullValidator(Validator):
 class DuplicateValidator(Validator):
 
     def __init__(self, key_column: str = TRANSACTION_ID) -> None:
-        self.key_column = key_column
+        self._key_column = key_column
 
-    def validate(self, df: pd.DataFrame) -> dict[str, Any]:
+    def validate(self, df: pd.DataFrame) -> dict[str, list[str]]:
         """
         Comprueba si la columna "Transaction ID" del DataFrame contiene valores duplicados.
         Si encuentra, agrega un error al diccionario de errores con el nombre de la columna y
@@ -48,13 +46,13 @@ class DuplicateValidator(Validator):
         :param df: DataFrame de pandas a validar.
         :type df: pd.DataFrame
         :return: Diccionario con los errores encontrados.
-        :rtype: dict[str, Any]
+        :rtype: dict[str, list[str]]
         """
 
         errors = {}
 
-        if df[self.key_column].duplicated().any():
-            errors.setdefault(self.key_column, []).append(DUPLICATED_VALUES_ERROR)
+        if df[self._key_column].duplicated().any():
+            errors.setdefault(self._key_column, []).append(DUPLICATED_VALUES_ERROR)
 
         return errors
 
@@ -66,7 +64,7 @@ class TypeValidator(Validator):
         """
         self._types = COLUMN_TYPES
 
-    def validate(self, df: pd.DataFrame) -> dict[str, Any]:
+    def validate(self, df: pd.DataFrame) -> dict[str, list[str]]:
         """
         Recorre cada columna del DataFrame y verifica si los valores pueden ser convertidos al tipo
         esperado. Si encuentra valores que no pueden ser convertidos, agrega un error al diccionario
@@ -75,7 +73,7 @@ class TypeValidator(Validator):
         :param df: DataFrame de pandas a validar.
         :type df: pd.DataFrame
         :return: Diccionario con los errores encontrados.
-        :rtype: dict[str, Any]
+        :rtype: dict[str, list[str]]
         """
         errors = {}
 

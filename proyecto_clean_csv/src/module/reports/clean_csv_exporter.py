@@ -1,10 +1,10 @@
-from pathlib import Path
 import pandas as pd
+
 
 def csv_exporter(_self, df: pd.DataFrame) -> None:
     """
     Genera un archivo CSV limpio a partir del DataFrame procesado.
-    
+
     :param df: DataFrame limpio a exportar
     """
 
