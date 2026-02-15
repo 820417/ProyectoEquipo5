@@ -56,10 +56,10 @@ class ReaderCSVGenerator(ReaderCSV):
         :return: DataFrame de pandas con los datos del CSV.
         :rtype: pd.DataFrame
         """
-<<<<<<< HEAD
+
         filas = self._read_generator(path)
         return pd.DataFrame(filas)
-=======
+
         try:
             filas = self._read_generator(path)
             return pd.DataFrame(filas)
@@ -68,7 +68,7 @@ class ReaderCSVGenerator(ReaderCSV):
             raise FileNotFoundError("Archivo CSV no econtrado.") from e
         except Exception as e:
             raise Exception("Error al leer el CSV") from e
->>>>>>> 36392c80d75d4a26104a2663ff30862cafaad26e
+
 
     def _read_generator(self, path: str):
         """

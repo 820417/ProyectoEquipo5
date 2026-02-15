@@ -98,10 +98,7 @@ class DataPipelineOrchestrator:
             # BarPlot(df, self._base_dir, f"{self.name}", column="Weekday", title="Día de la Semana", xlabel="Día de la Semana", ylabel="Cantidad")
         ]
 
-<<<<<<< HEAD
-    for plot in plots:
-        plot.plot()
-=======
+
         for plot in plots:
             plot.plot()
->>>>>>> 36392c80d75d4a26104a2663ff30862cafaad26e
+
