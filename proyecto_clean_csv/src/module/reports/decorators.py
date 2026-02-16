@@ -8,7 +8,23 @@ logger = logging.getLogger(__name__)
 
 
 def track_changes(_func: Callable | None = None, *, action: str | None = None):
+    """
+    Decorador que registra en el logger información sobre la ejecución
+    de la función decorada, incluyendo el número de filas antes y después
+    de su ejecución y el tiempo total de ejecución.
 
+    Si la función recibe y devuelve un DataFrame, el decorador calcula:
+        - Número de filas iniciales
+        - Número de filas finales
+        - Diferencia de filas (añadidas o eliminadas)
+
+    Además, registra el tiempo de ejecución en segundos.
+
+    :param func: Función que puede recibir y devolver un DataFrame.
+    :type func: Callable
+    :return: Función envuelta que incluye el registro de cambios.
+    :rtype: Callable
+    """
     def decorator(func: Callable):
         def wrapper(*args, **kwargs):
             start = time.perf_counter()
@@ -57,7 +73,20 @@ def track_changes(_func: Callable | None = None, *, action: str | None = None):
 
 
 def track_dtype_changes(func: Callable) -> Callable:
+    """
+    Decorador que registra en el logger los cambios en los tipos de datos
+    (dtypes) de las columnas de un DataFrame antes y después de ejecutar
+    la función decorada.
 
+    Compara los tipos de cada columna y muestra en el log:
+        - Nombre de la columna
+        - Tipo antes de la ejecución
+        - Tipo después de la ejecución
+        :param func: Función que recibe y devuelve un DataFrame.
+    :type func: Callable
+    :return: Función envuelta que incluye el registro de cambios de tipos.
+    :rtype: Callable
+    """
     def wrapper(*args, **kwargs):
         df_antes = next((arg for arg in args if isinstance(arg, pd.DataFrame)), None)
 
