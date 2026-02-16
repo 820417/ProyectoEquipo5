@@ -194,6 +194,11 @@ El archivo `src/module/data_models/config.json` permite configurar el comportami
 
 ### Parámetros de Configuración
 
+#### Validaciones (`validations`)
+- `validate_duplicates` (bool): Activar/desactivar la validación de elementos duplicados
+- `validate_nulls` (bool): Activar/desactivar la validación de valores nulos
+- `validate_types` (bool): Activar/desactivar la validación de tipos de datos
+
 #### Duplicados (`duplicates`)
 - `apply` (bool): Activar/desactivar eliminación de duplicados
 - `keep` (str): Estrategia para mantener duplicados
@@ -201,11 +206,6 @@ El archivo `src/module/data_models/config.json` permite configurar el comportami
   - `"last"`: Mantener última ocurrencia
   - `false`: Eliminar todas las ocurrencias
 - `columns` (list): Columnas para identificar duplicados
-
-#### Valores Nulos (`nulls`)
-- `apply` (bool): Activar/desactivar manejo de nulos
-- `fill_value` (any): Valor para rellenar nulos
-- `columns` (list): Columnas donde aplicar el relleno
 
 #### Conversión de tipos (`types`)
 - `apply` (bool): Activar/desactivar la conversión forzada de tipos de datos según el esquema definido en schema.py (fechas, enteros Int64 y decimales Float64).
@@ -245,9 +245,10 @@ El proyecto maneja datos con el siguiente esquema (definido en `schema.py`):
 ### Estructura de Tests
 
 El proyecto incluye tests para:
+- Lectura (get_csv_reader, ReaderCSVPandas y ReaderCSVGenerator)
 - Validadores (NULL_VALUES, DUPLICATED_VALUES, TYPE_ERROR)
 - Limpiadores (remove_duplicate, fill_null, impute_amounts, drop_null, apply_schema_types)
-- 
+- Transformadores
 
 ---
 
