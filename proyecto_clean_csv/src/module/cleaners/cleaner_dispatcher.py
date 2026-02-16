@@ -63,6 +63,8 @@ class DataCleanerDispatcher:
         if types_config.get("apply", False):
             df_clean = apply_schema_types(df_clean, COLUMN_TYPES)
 
+        print(df_clean.info())
+
         # 3. Imputar valores faltantes en "Quantity", "Price Per Unit" y "Total Spent"
         if impute_config.get("apply_amounts", False):
             df_clean = impute_amounts(df_clean)

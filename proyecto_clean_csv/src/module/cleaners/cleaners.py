@@ -120,6 +120,9 @@ def apply_schema_types(
             elif dtype in ["int", "Int64"]:
                 df_clean[col] = pd.to_numeric(df_clean[col], errors="coerce")
                 df_clean[col] = df_clean[col].astype("Int64")
+            elif dtype in ["float", "Float64"]:
+                df_clean[col] = pd.to_numeric(df_clean[col], errors="coerce")
+                df_clean[col] = df_clean[col].astype("Float64")
             else:
                 try:
                     df_clean[col] = df_clean[col].astype(dtype)

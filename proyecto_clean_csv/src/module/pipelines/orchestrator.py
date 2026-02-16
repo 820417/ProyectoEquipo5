@@ -82,8 +82,8 @@ class DataPipelineOrchestrator:
         return dict(all_errors)
 
     def _transformacion(self, df: pd.DataFrame) -> pd.DataFrame:
-        # df = add_year_third_column(df)
-        # df = add_weekday_column(df)
+        df = add_year_third_column(df)
+        df = add_weekday_column(df)
         df = add_category_column(df)
         return df
 
@@ -93,9 +93,32 @@ class DataPipelineOrchestrator:
 
     def _generate_plots(self, df: pd.DataFrame):
         plots = [
-            BarPlot(df, self._base_dir, f"{self.name}", column="Category", title="Categorías", xlabel="Categoría", ylabel="Cantidad")
-            # BarPlot(df, self._base_dir, f"{self.name}", column="Tercio del año", title="Tercio del Año", xlabel="Tercio del Año", ylabel="Cantidad")
-            # BarPlot(df, self._base_dir, f"{self.name}", column="Weekday", title="Día de la Semana", xlabel="Día de la Semana", ylabel="Cantidad")
+            BarPlot(
+                df,
+                self._base_dir,
+                f"{self.name}",
+                column="Category",
+                title="Categorías",
+                xlabel="Categoría",
+                ylabel="Cantidad"
+            ),
+            BarPlot(
+                df, self._base_dir,
+                f"{self.name}",
+                column="Year third",
+                title="Tercio del año",
+                xlabel="Tercio del Año",
+                ylabel="Cantidad"
+            ),
+            BarPlot(
+                df,
+                self._base_dir,
+                f"{self.name}",
+                column="Weekday",
+                title="Día de la Semana",
+                xlabel="Día de la Semana",
+                ylabel="Cantidad"
+            ),
         ]
 
 
