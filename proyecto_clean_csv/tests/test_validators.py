@@ -65,20 +65,17 @@ def test_duplicate_validator_duplicates():
     assert TRANSACTION_ID in errors
     assert DUPLICATED_VALUES_ERROR in errors[TRANSACTION_ID]
 
+
+# TypeValidator
 @pytest.mark.parametrize(
     "data",
     [
         ({"Quantity": ["1", "2", "3"]}),
         ({"Price Per Unit": ["10.5", "20.0", "30"]}),
         ({"Transaction Date": ["1987-06-24", "2026-02-15"]}),
-        ({
-            "Quantity": ["1", "2"],
-            "Price Per Unit": ["10.5", "20.0"],
-        }),
+        ({"Quantity": ["1", "2"], "Price Per Unit": ["10.5", "20.0"]}),
     ]
 )
-
-# TypeValidator
 def test_type_validator_valid(data):
     df = pd.DataFrame(data)
     validator = TypeValidator()
@@ -91,6 +88,7 @@ def test_type_validator_valid(data):
 @pytest.mark.parametrize(
     "data, valid, error_columns",
     [
+        ({"Transaction ID": ["TXN_3051279", "str"]}, True, []),
         ({"Quantity": ["1", "str", "3"]}, False, ["Quantity"]),
         ({"Price Per Unit": ["10.5", "str"]}, False, ["Price Per Unit"]),
         ({"Total Spent": ["20.4", "str"]}, False, ["Total Spent"]),
