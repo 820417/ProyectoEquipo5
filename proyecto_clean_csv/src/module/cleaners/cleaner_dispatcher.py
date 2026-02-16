@@ -44,9 +44,6 @@ class DataCleanerDispatcher:
         types_config = self.config.get("types", {})
         impute_config = self.config.get("imputation", {})
         nulls_config = self.config.get("nulls", {})
-        # null_strategy = self.config.get("null_strategy", "fill")
-        # fill_value = self.config.get("fill_value", "UNKNOWN")
-        # keep_duplicates = self.config.get("keep_duplicates", "first")
 
         # 1. Eliminar elementos duplicados de "Transaction ID"
         if dup_config.get("apply", False):
@@ -59,12 +56,8 @@ class DataCleanerDispatcher:
                 )
 
         # 2. Conversión de columnas a numéricas antes de la imputación
-        # TODO: Falta convertir la columna de fecha (y si se puede "Quantity" a int),
-        #  -> los tipos están en schema.py en la const COLUMN_TYPES
         if types_config.get("apply", False):
             df_clean = apply_schema_types(df_clean, COLUMN_TYPES)
-
-        print(df_clean.info())
 
         # 3. Imputar valores faltantes en "Quantity", "Price Per Unit" y "Total Spent"
         if impute_config.get("apply_amounts", False):
