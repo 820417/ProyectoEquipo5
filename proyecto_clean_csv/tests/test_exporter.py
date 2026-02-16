@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock
 
 import pandas as pd
-import pytest
 
 from module.reports import csv_exporter
 

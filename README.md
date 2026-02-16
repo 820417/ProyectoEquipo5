@@ -121,7 +121,7 @@ graph TD
     L -->|No| M[Transformaciones]
     L1 --> M
 
-    M --> M1[Quarter]
+    M --> M1[Third]
     M --> M2[Day of Week]
     M --> M3[Category]
 

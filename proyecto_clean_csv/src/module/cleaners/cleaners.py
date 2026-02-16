@@ -93,7 +93,7 @@ def drop_null_rows(df: pd.DataFrame, columns: list[str] | None = None) -> pd.Dat
         columns: Si se proporciona, solo busca nulos en estas columnas.
                         Si es None, revisa todas las columnas de la fila.
     """
-    return df.replace("UNKNOWN", np.nan).dropna(subset=columns).reset_index(drop=True)
+    return df.replace(['UNKNOWN', 'ERROR'], np.nan).dropna(subset=columns).reset_index(drop=True)
 
 
 @track_dtype_changes

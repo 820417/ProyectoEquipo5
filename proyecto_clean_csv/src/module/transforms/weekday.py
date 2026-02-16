@@ -1,5 +1,7 @@
 import pandas as pd
+
 from module.reports import track_changes
+
 
 @track_changes
 def add_weekday_column(
@@ -8,7 +10,7 @@ def add_weekday_column(
     weekday_column: str="Weekday"
 )-> pd.DataFrame:
     """
-    Añade una columna indicando el nombre del día de la semana de cada fecha de transacción 
+    Añade una columna indicando el nombre del día de la semana de cada fecha de transacción
     (e.g., Monday, Tuesday, etc.).
 
     :param df: Input DataFrame.
