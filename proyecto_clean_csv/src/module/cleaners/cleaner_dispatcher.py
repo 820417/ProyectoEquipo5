@@ -6,7 +6,6 @@ from module.data_models.schema import (
     COLUMN_TYPES,
     CRITICAL_COLUMNS,
     DUPLICATED_VALUES_ERROR,
-    ITEM_TO_CATEGORY,
     NULL_VALUES_ERROR,
     TRANSACTION_ID,
 )
@@ -16,7 +15,6 @@ from .cleaners import (
     drop_null_rows,
     fill_null_values,
     impute_amounts,
-    impute_category_from_item,
     remove_duplicate_rows,
 )
 
@@ -57,15 +55,11 @@ class DataCleanerDispatcher:
 
         # 2. Conversión de columnas a numéricas antes de la imputación
         if types_config.get("apply", False):
-            df_clean = apply_schema_types(df_clean, COLUMN_TYPES)
+            df_clean = apply_schema_types(df_clean, COLUMN_TYPES, error_report)
 
         # 3. Imputar valores faltantes en "Quantity", "Price Per Unit" y "Total Spent"
         if impute_config.get("apply_amounts", False):
             df_clean = impute_amounts(df_clean)
-
-        # 3.2 Imputar categorías basándose en el Item
-        if impute_config.get("apply_category", False):
-            df_clean = impute_category_from_item(df_clean, ITEM_TO_CATEGORY)
 
         # 4. Manejo de valores nulos restantes según la estrategia definida
         critical_to_drop = [

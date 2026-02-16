@@ -97,15 +97,21 @@ def drop_null_rows(df: pd.DataFrame, columns: list[str] | None = None) -> pd.Dat
 
 
 @track_dtype_changes
-def apply_schema_types(df: pd.DataFrame, column_types: dict[str, Any]) -> pd.DataFrame:
+def apply_schema_types(
+    df: pd.DataFrame, column_types: dict[str, Any], error_report: dict[str, list[str]]
+) -> pd.DataFrame:
     """Fuerza los tipos de datos basándose en el diccionario inyectado.
 
     Resuelve fechas y permite usar el tipo Int64.
     """
     df_clean = df.copy()
 
-    for col, dtype in column_types.items():
-        if col in df_clean.columns:
+    cols_with_error = [col for col, errors in error_report.items() if "TYPE_ERROR" in errors]
+
+    for col in cols_with_error:
+        if col in column_types:
+            dtype = column_types[col]
+
             if dtype in ["datetime", "datetime64[ns]"]:
                 df_clean[col] = pd.to_datetime(df_clean[col], errors="coerce")
             elif dtype in ["int", "Int64"]:
@@ -119,18 +125,5 @@ def apply_schema_types(df: pd.DataFrame, column_types: dict[str, Any]) -> pd.Dat
                     df_clean[col] = df_clean[col].astype(dtype)
                 except (ValueError, TypeError):
                     pass
-
-    return df_clean
-
-
-@track_changes
-def impute_category_from_item(df: pd.DataFrame, mapping: dict[str, str]) -> pd.DataFrame:
-    """Rellena los nulos de la columna 'Category' basándose en la columna 'Item'
-    y un diccionario de mapeo.
-    """
-    df_clean = df.copy()
-
-    if "Category" in df_clean.columns and "Item" in df_clean.columns:
-        df_clean["Category"] = df_clean["Category"].fillna(df_clean["Item"].map(mapping))
 
     return df_clean
