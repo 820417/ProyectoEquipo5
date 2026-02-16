@@ -166,16 +166,29 @@ El archivo `src/module/data_models/config.json` permite configurar el comportami
 
 ```json
 {
+    "validations":{
+        "validate_duplicates": true,
+        "validate_nulls": true,
+        "validate_types": true
+    },
     "duplicates": {
         "apply": true,
         "keep": "last",
         "columns": ["Transaction ID"]
+    },
+    "types": {
+        "apply": true
+    },
+    "imputation": {
+        "apply_amounts": true,
+        "apply_category": true
     },
     "nulls": {
         "apply": true,
         "fill_value": "NO_PROPORCIONADO",
         "columns": ["Category", "Payment Method"]
     }
+
 }
 ```
 
@@ -265,7 +278,7 @@ Elimina las filas duplicadas identificadas en el DataFrame basándose en una col
 La estrategia de conservación se controla dinámicamente mediante el archivo de configuración.
 
 #### Conversión de tipos de datos
-Estandariza los tipos de datos de las columnas basándose en las reglas del esquema del proyecto "schema.py". 
+Estandariza los tipos de datos de las columnas identificadas en el DataFrame basándose en las reglas del esquema del proyecto "schema.py". 
 Transforma textos en formatos de fecha correctos y aplica tipos numéricos de Pandas Int64 y Float64 que permiten operar matemáticamente sin fallar cuando existen valores nulos.
 
 #### Imputación de valores numéricos basados en relaciones matemáticas entre columnas
@@ -273,10 +286,9 @@ Rescata datos faltantes evaluando la relación lógica entre las columnas Quanti
 Si una de estas métricas está vacía, el sistema calcula y rellena el hueco automáticamente utilizando los valores disponiblels en las otras dos.
 
 #### Manejo de Valores Nulos
-Aplica una estrategia de resolución de nulos en tres fases, dirigida por el orquestador:
-1. Imputación inteligente: Deduce y rellena categorías vacías basándose en el nombre del producto de la columna Item, utilizando un diccionario de mapeo de negocio.
-2. Eliminación crítica: Borra del registro aquellas filas que contienen valores nulos o textos inválidos como "UNKNOWN", en columnas definidas como innegociables (CRITICAL_COLUMNS).
-3. Relleno opcional: Sustituye los vacíos restantes en las columnas no críticas autorizadas con un valor por defecto seguro como "NO_PROPORCIONADO", definido en la configuración.
+Aplica una estrategia de resolución de nulos en dos fases, dirigida por el orquestador:
+1. Eliminación crítica: Borra del registro aquellas filas que contienen valores nulos o textos inválidos como "UNKNOWN", en columnas definidas como innegociables (CRITICAL_COLUMNS).
+2. Relleno opcional: Sustituye los vacíos restantes en las columnas no críticas autorizadas con un valor por defecto seguro como "NO_PROPORCIONADO", definido en la configuración.
 
 
 ### 4. Transformaciones y cálculos de nuevas columnas
