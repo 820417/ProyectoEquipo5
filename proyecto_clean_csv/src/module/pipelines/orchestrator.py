@@ -74,10 +74,11 @@ class DataPipelineOrchestrator:
         all_errors: dict[str, list] = defaultdict(list)
 
         for validator in validators:
-            errors = validator.validate(df)
+            errors = validator.validate(df, self.config)
 
             for column, error_list in errors.items():
                 all_errors[column].extend(error_list)
+        print(all_errors)
 
         return dict(all_errors)
 

@@ -4,5 +4,5 @@ import pandas as pd
 
 
 class Validator(Protocol):
-    def validate(self, df: pd.DataFrame) -> dict[str, Any]:
+    def validate(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, Any]:
         ...

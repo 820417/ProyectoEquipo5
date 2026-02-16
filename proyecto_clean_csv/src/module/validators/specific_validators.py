@@ -1,3 +1,5 @@
+from typing import Any
+
 import pandas as pd
 
 from module.data_models.schema import (
@@ -15,7 +17,7 @@ class NullValidator(Validator):
     """
     Validador para detectar valores nulos en el DataFrame.
     """
-    def validate(self, df: pd.DataFrame) -> dict[str, list[str]]:
+    def validate(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, list[str]]:
         """
         Recorre cada columna del DataFrame y si encuentra valores nulos agrega un error
         al diccionario de errores con el nombre de la columna y el mensaje "NULL_VALUES".
@@ -25,6 +27,9 @@ class NullValidator(Validator):
         :return: Diccionario con los errores encontrados.
         :rtype: dict[str, list[str]]
         """
+        if not config.get("validations", {}).get("validate_nulls", False):
+            return {}
+
         errors = {}
         for col in df.columns:
             if df[col].isnull().any():
@@ -37,7 +42,7 @@ class DuplicateValidator(Validator):
     def __init__(self, key_column: str = TRANSACTION_ID) -> None:
         self._key_column = key_column
 
-    def validate(self, df: pd.DataFrame) -> dict[str, list[str]]:
+    def validate(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, list[str]]:
         """
         Comprueba si la columna "Transaction ID" del DataFrame contiene valores duplicados.
         Si encuentra, agrega un error al diccionario de errores con el nombre de la columna y
@@ -48,6 +53,8 @@ class DuplicateValidator(Validator):
         :return: Diccionario con los errores encontrados.
         :rtype: dict[str, list[str]]
         """
+        if not config.get("validations", {}).get("validate_duplicates", False):
+            return {}
 
         errors = {}
 
@@ -64,7 +71,7 @@ class TypeValidator(Validator):
         """
         self._types = COLUMN_TYPES
 
-    def validate(self, df: pd.DataFrame) -> dict[str, list[str]]:
+    def validate(self, df: pd.DataFrame, config: dict[str, Any]) -> dict[str, list[str]]:
         """
         Recorre cada columna del DataFrame y verifica si los valores pueden ser convertidos al tipo
         esperado. Si encuentra valores que no pueden ser convertidos, agrega un error al diccionario
@@ -75,6 +82,10 @@ class TypeValidator(Validator):
         :return: Diccionario con los errores encontrados.
         :rtype: dict[str, list[str]]
         """
+
+        if not config.get("validations", {}).get("validate_types", False):
+            return {}
+
         errors = {}
 
         for col, expected_type in self._types.items():

@@ -1,4 +1,9 @@
 {
+    "validations":{
+        "validate_duplicates": true,
+        "validate_nulls": true,
+        "validate_types": false
+    },
     "duplicates": {
         "apply": true,
         "keep": "last",
@@ -16,4 +21,5 @@
         "fill_value": "NO_PROPORCIONADO",
         "columns": ["Category", "Payment Method"]
     }
+
 }

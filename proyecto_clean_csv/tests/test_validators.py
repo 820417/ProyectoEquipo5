@@ -14,20 +14,30 @@ from module.validators.specific_validators import (
 )
 
 
+@pytest.fixture
+def base_config():
+    return {
+        "validations": {
+            "validate_duplicates": True,
+            "validate_nulls": True,
+            "validate_types": True,
+        }
+    }
+
 # NullValidator
-def test_null_validator_no_nulls():
+def test_null_validator_no_nulls(base_config):
     df = pd.DataFrame({
         "a": [1, 2, 3],
         "b": ["x", "y", "z"]
     })
 
     validator = NullValidator()
-    errors = validator.validate(df)
+    errors = validator.validate(df, base_config)
 
     assert errors == {}
 
 
-def test_null_validator_nulls():
+def test_null_validator_nulls(base_config):
     df = pd.DataFrame({
         "a": [1, None, 3],
         "b": ["4", "5", "6"],
@@ -35,7 +45,7 @@ def test_null_validator_nulls():
     })
 
     validator = NullValidator()
-    errors = validator.validate(df)
+    errors = validator.validate(df, base_config)
 
     assert "a" in errors
     assert "c" in errors
@@ -43,24 +53,24 @@ def test_null_validator_nulls():
     assert NULL_VALUES_ERROR in errors["c"]
 
 # DuplicateValidator
-def test_duplicate_validator_no_duplicates():
+def test_duplicate_validator_no_duplicates(base_config):
     df = pd.DataFrame({
         TRANSACTION_ID: ["1", "2", "3"]
     })
 
     validator = DuplicateValidator()
-    errors = validator.validate(df)
+    errors = validator.validate(df, base_config)
 
     assert errors == {}
 
 
-def test_duplicate_validator_duplicates():
+def test_duplicate_validator_duplicates(base_config):
     df = pd.DataFrame({
         TRANSACTION_ID: ["1", "2", "2"]
     })
 
     validator = DuplicateValidator()
-    errors = validator.validate(df)
+    errors = validator.validate(df, base_config)
 
     assert TRANSACTION_ID in errors
     assert DUPLICATED_VALUES_ERROR in errors[TRANSACTION_ID]
@@ -76,11 +86,11 @@ def test_duplicate_validator_duplicates():
         ({"Quantity": ["1", "2"], "Price Per Unit": ["10.5", "20.0"]}),
     ]
 )
-def test_type_validator_valid(data):
+def test_type_validator_valid(data, base_config):
     df = pd.DataFrame(data)
     validator = TypeValidator()
 
-    errors = validator.validate(df)
+    errors = validator.validate(df, base_config)
 
     assert errors == {}
 
@@ -95,11 +105,11 @@ def test_type_validator_valid(data):
         ({"Transaction Date": ["1987-06-24", "str"]}, False, ["Transaction Date"])
     ]
 )
-def test_type_validator_invalid(data, valid, error_columns):
+def test_type_validator_invalid(data, valid, error_columns, base_config):
     df = pd.DataFrame(data)
     validator = TypeValidator()
 
-    errors = validator.validate(df)
+    errors = validator.validate(df, base_config)
 
     if valid:
         assert errors == {}
