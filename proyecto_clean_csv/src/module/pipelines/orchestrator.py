@@ -1,4 +1,5 @@
 import json
+import logging
 from collections import defaultdict
 from pathlib import Path
 
@@ -11,6 +12,7 @@ from module.reports.plot_generator import BarPlot
 from module.transforms import add_category_column, add_weekday_column, add_year_third_column
 from module.validators import DuplicateValidator, NullValidator, TypeValidator, Validator
 
+logger = logging.getLogger(__name__)
 
 class DataPipelineOrchestrator:
     def __init__(self, path: str, config_path: str, base_dir: Path):
@@ -78,7 +80,12 @@ class DataPipelineOrchestrator:
 
             for column, error_list in errors.items():
                 all_errors[column].extend(error_list)
-        print(all_errors)
+
+        if all_errors:
+            logger.info(
+                "Errores de validación encontrados:\n%s",
+                json.dumps(all_errors, indent=2, ensure_ascii=False)
+            )
 
         return dict(all_errors)
 

@@ -309,7 +309,13 @@ Se añade una columna llemada Category en la que se agrupan los productos vendid
 
 ### 6. Sistema de Logging
 - Se genera un reporte detallado de los errores encontrados durante la validación, indicando el tipo de error y las columnas afectadas.
+- Además, incorpora mecanismos de seguimiento específicos:
 
+    track_change: Registra automáticamente las modificaciones aplicadas al DataFrame (eliminación de duplicados, imputaciones, relleno de nulos, etc.), permitiendo trazabilidad completa del proceso.
+
+    track_dtype_changes: Detecta y registra cambios en los tipos de datos de las columnas tras la conversión según el esquema definido.
+
+El resultado es un pipeline totalmente auditable, con un registro detallado de errores y transformaciones en app_log.txt.
 ---
 ## Herramientas de calidad de código
 

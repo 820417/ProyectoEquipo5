@@ -15,7 +15,6 @@ def setup_logging(log_level: str, log_file:str)-> None:
         level=numeric_level,
         format ="%(asctime)s - %(levelname)s - %(message)s",
         handlers=[
-            logging.FileHandler(log_path, encoding="utf-8"),
-            logging.StreamHandler()
+            logging.FileHandler(log_path, encoding="utf-8")
         ]
     )
