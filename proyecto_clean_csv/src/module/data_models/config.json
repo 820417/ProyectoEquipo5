@@ -4,6 +4,13 @@
         "keep": "last",
         "columns": ["Transaction ID"]
     },
+    "types": {
+        "apply": true
+    },
+    "imputation": {
+        "apply_amounts": true,
+        "apply_category": true
+    },
     "nulls": {
         "apply": true,
         "fill_value": "NO_PROPORCIONADO",

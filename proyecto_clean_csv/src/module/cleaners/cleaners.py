@@ -1,7 +1,8 @@
 from typing import Any, Literal
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+
 from src.module.reports import track_changes
 
 
@@ -62,28 +63,29 @@ def impute_amounts(
     if df is None:
         raise ValueError("DataFrame cannot be None")
 
+    df_clean = df.copy()
     cols = ["Quantity", "Price Per Unit", "Total Spent"]
 
     for col in cols:
-        if col not in df.columns:
+        if col not in df_clean.columns:
             raise ValueError(f"Column '{col}' not found in DataFrame")
 
-    df["Total Spent"] = (
-        df["Total Spent"]
-        .fillna(df["Quantity"] * df["Price Per Unit"])
+    df_clean["Total Spent"] = (
+        df_clean["Total Spent"]
+        .fillna(df_clean["Quantity"] * df_clean["Price Per Unit"])
     )
-    df["Quantity"] = (
-        df["Quantity"]
-        .fillna(df["Total Spent"] / df["Price Per Unit"])
+    df_clean["Quantity"] = (
+        df_clean["Quantity"]
+        .fillna(df_clean["Total Spent"] / df_clean["Price Per Unit"])
         .replace(0, np.nan)
     )
-    df["Price Per Unit"] = (
-        df["Price Per Unit"]
-        .fillna(df["Total Spent"] / df["Quantity"])
+    df_clean["Price Per Unit"] = (
+        df_clean["Price Per Unit"]
+        .fillna(df_clean["Total Spent"] / df_clean["Quantity"])
         .replace(0, np.nan)
     )
 
-    return df
+    return df_clean
 
 @track_changes
 def drop_null_rows(
@@ -101,23 +103,43 @@ def drop_null_rows(
 
 
 @track_changes
-def convert_types_to_numeric(
+def apply_schema_types(
     df: pd.DataFrame,
-    columns: list[str] | None = None
+    column_types: dict[str, Any]
 ) -> pd.DataFrame:
-    """Intenta convertir las columnas especificadas a valores numéricos.
+    """Fuerza los tipos de datos basándose en el diccionario inyectado.
 
-    Los valores que no se puedan convertir (ej: texto corrupto) se transformarán en NaN.
-
-    Args:
-        df: El DataFrame a procesar.
-        columns: Lista de columnas a convertir.
+    Resuelve fechas y permite usar el tipo Int64.
     """
     df_clean = df.copy()
-    cols_to_convert = columns if columns else df_clean.columns
 
-    for col in cols_to_convert:
+    for col, dtype in column_types.items():
         if col in df_clean.columns:
-            df_clean[col] = pd.to_numeric(df_clean[col], errors="coerce")
+            if dtype in ["datetime", "datetime64[ns]"]:
+                df_clean[col] = pd.to_datetime(df_clean[col], errors="coerce")
+            elif dtype in ["int", "Int64"]:
+                df_clean[col] = pd.to_numeric(df_clean[col], errors="coerce")
+                df_clean[col] = df_clean[col].astype("Int64")
+            else:
+                try:
+                    df_clean[col] = df_clean[col].astype(dtype)
+                except (ValueError, TypeError):
+                    pass
+
+    return df_clean
+
+
+@track_changes
+def impute_category_from_item(
+    df: pd.DataFrame,
+    mapping: dict[str, str]
+) -> pd.DataFrame:
+    """Rellena los nulos de la columna 'Category' basándose en la columna 'Item'
+    y un diccionario de mapeo.
+    """
+    df_clean = df.copy()
+
+    if "Category" in df_clean.columns and "Item" in df_clean.columns:
+        df_clean["Category"] = df_clean["Category"].fillna(df_clean["Item"].map(mapping))
 
     return df_clean

@@ -1,20 +1,23 @@
 from typing import Any
 
 import pandas as pd
+
 from src.module.data_models.schema import (
+    COLUMN_TYPES,
     CRITICAL_COLUMNS,
-    NUMERIC_COLUMNS,
-    TRANSACTION_ID,
     DUPLICATED_VALUES_ERROR,
+    ITEM_TO_CATEGORY,
     NULL_VALUES_ERROR,
-    TYPE_ERROR
+    TRANSACTION_ID,
 )
+
 from .cleaners import (
-    convert_types_to_numeric,
+    apply_schema_types,
     drop_null_rows,
     fill_null_values,
+    impute_amounts,
+    impute_category_from_item,
     remove_duplicate_rows,
-    impute_amounts
 )
 
 
@@ -36,43 +39,62 @@ class DataCleanerDispatcher:
         """
         df_clean = df.copy()
 
-        null_strategy = self.config.get("null_strategy", "fill")
-        fill_value = self.config.get("fill_value", "UNKNOWN")
-        keep_duplicates = self.config.get("keep_duplicates", "first")
+        dup_config = self.config.get("duplicates", {})
+        types_config = self.config.get("types", {})
+        impute_config = self.config.get("imputation", {})
+        nulls_config = self.config.get("nulls", {})
+        #null_strategy = self.config.get("null_strategy", "fill")
+        #fill_value = self.config.get("fill_value", "UNKNOWN")
+        #keep_duplicates = self.config.get("keep_duplicates", "first")
 
         # 1. Eliminar elementos duplicados de "Transaction ID"
-        if (TRANSACTION_ID in error_report and
-                DUPLICATED_VALUES_ERROR in error_report[TRANSACTION_ID]):
-            df_clean = remove_duplicate_rows(
-                df_clean,
-                columns=[TRANSACTION_ID],
-                keep=keep_duplicates
-            )
+        if dup_config.get("apply", False):
+            if (TRANSACTION_ID in error_report and
+                    DUPLICATED_VALUES_ERROR in error_report[TRANSACTION_ID]):
+                df_clean = remove_duplicate_rows(
+                    df_clean,
+                    columns=[TRANSACTION_ID],
+                    keep=dup_config.get("keep", "first")
+                )
 
         # 2. Conversión de columnas a numéricas antes de la imputación
         # TODO: Falta convertir la columna de fecha (y si se puede "Quantity" a int),
         #  -> los tipos están en schema.py en la const COLUMN_TYPES
-        df_clean = convert_types_to_numeric(df_clean, NUMERIC_COLUMNS)
+        if types_config.get("apply", False):
+            df_clean = apply_schema_types(df_clean, COLUMN_TYPES)
 
         # 3. Imputar valores faltantes en "Quantity", "Price Per Unit" y "Total Spent"
-        df_clean = impute_amounts(df_clean)
+        if impute_config.get("apply_amounts", False):
+            df_clean = impute_amounts(df_clean)
+
+        # 3.2 Imputar categorías basándose en el Item
+        if impute_config.get("apply_category", False):
+            df_clean = impute_category_from_item(df_clean, ITEM_TO_CATEGORY)
 
         # 4. Manejo de valores nulos restantes según la estrategia definida
         critical_to_drop = [
             col for col in error_report
             if NULL_VALUES_ERROR in error_report[col] and col in CRITICAL_COLUMNS
         ]
-        optional_to_fill = [
-            col for col in error_report
-            if NULL_VALUES_ERROR in error_report[col] and col not in CRITICAL_COLUMNS
-        ]
 
         # 4.1 Drop nulos en columnas críticas
         if critical_to_drop:
             df_clean = drop_null_rows(df_clean, columns=critical_to_drop)
 
-        # 4.2 Rellenar nulos en columnas opcionales
-        if optional_to_fill:
-            df_clean = fill_null_values(df_clean, columns=optional_to_fill, fill_value=fill_value)
+        # 4.2 Fill nulos opcionales autorizados por el JSON
+        if nulls_config.get("apply", False):
+            allowed_cols = nulls_config.get("columns", [])
+            cols_to_fill = [
+                col for col in error_report
+                if NULL_VALUES_ERROR in error_report.get(col, [])
+                and col in allowed_cols
+                and col not in CRITICAL_COLUMNS
+            ]
+            if cols_to_fill:
+                df_clean = fill_null_values(
+                    df_clean,
+                    columns=cols_to_fill,
+                    fill_value=nulls_config.get("fill_value", "UNKNOWN")
+                )
 
         return df_clean
