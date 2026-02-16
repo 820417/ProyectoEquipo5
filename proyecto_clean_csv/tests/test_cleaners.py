@@ -73,12 +73,19 @@ def test_apply_schema_types():
             "Date_Col": ["2023-01-01", "invalid_date"],
             "Int_Col": ["10", "invalid_int"],
             "Float_Col": ["20.5", "invalid_float"],
+            "Normal_Col": ["Texto", "Texto"],
         }
     )
 
     column_types = {"Date_Col": "datetime", "Int_Col": "Int64", "Float_Col": "Float64"}
 
-    df_clean = apply_schema_types(df, column_types)
+    error_report = {
+        "Date_Col": ["TYPE_ERROR"],
+        "Int_Col": ["TYPE_ERROR"],
+        "Float_Col": ["TYPE_ERROR"],
+    }
+
+    df_clean = apply_schema_types(df, column_types, error_report)
 
     assert pd.api.types.is_datetime64_any_dtype(df_clean["Date_Col"])
     assert df_clean["Int_Col"].dtype == "Int64"
