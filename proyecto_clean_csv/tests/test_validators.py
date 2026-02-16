@@ -52,6 +52,20 @@ def test_null_validator_nulls(base_config):
     assert NULL_VALUES_ERROR in errors["a"]
     assert NULL_VALUES_ERROR in errors["c"]
 
+def test_null_validator_disabled(base_config):
+    base_config["validations"]["validate_nulls"] = False
+
+    df = pd.DataFrame({
+        "a": [1, None, 3],
+        "b": ["4", "5", "6"],
+        "c": ["x", "y", None]
+    })
+
+    validator = NullValidator()
+    errors = validator.validate(df, base_config)
+
+    assert errors == {}
+
 # DuplicateValidator
 def test_duplicate_validator_no_duplicates(base_config):
     df = pd.DataFrame({
@@ -75,6 +89,16 @@ def test_duplicate_validator_duplicates(base_config):
     assert TRANSACTION_ID in errors
     assert DUPLICATED_VALUES_ERROR in errors[TRANSACTION_ID]
 
+def test_duplicate_validator_disabled(base_config):
+    base_config["validations"]["validate_duplicates"] = False
+    df = pd.DataFrame({
+        TRANSACTION_ID: ["1", "2", "2"]
+    })
+
+    validator = DuplicateValidator()
+    errors = validator.validate(df, base_config)
+
+    assert errors == {}
 
 # TypeValidator
 @pytest.mark.parametrize(
@@ -117,3 +141,22 @@ def test_type_validator_invalid(data, valid, error_columns, base_config):
         for col in error_columns:
             assert col in errors
             assert TYPE_ERROR in errors[col]
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"Transaction ID": ["TXN_3051279", "str"]},
+        {"Quantity": ["1", "str", "3"]},
+        {"Price Per Unit": ["10.5", "str"]},
+        {"Total Spent": ["20.4", "str"]},
+        {"Transaction Date": ["1987-06-24", "str"]}
+    ]
+)
+def test_type_validator_disabled(data, base_config):
+    base_config["validations"]["validate_types"] = False
+    df = pd.DataFrame(data)
+    validator = TypeValidator()
+
+    errors = validator.validate(df, base_config)
+
+    assert errors == {}
