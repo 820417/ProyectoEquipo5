@@ -2,7 +2,7 @@ from typing import Any
 
 import pandas as pd
 
-from src.module.data_models.schema import (
+from module.data_models.schema import (
     COLUMN_TYPES,
     CRITICAL_COLUMNS,
     DUPLICATED_VALUES_ERROR,
@@ -23,6 +23,7 @@ from .cleaners import (
 
 class DataCleanerDispatcher:
     """Clase encargada de dirigir los errores detectados por el Validator."""
+
     def __init__(self, config: dict[str, Any]) -> None:
         """Recibe la configuración del cliente."""
         self.config = config
@@ -43,27 +44,20 @@ class DataCleanerDispatcher:
         types_config = self.config.get("types", {})
         impute_config = self.config.get("imputation", {})
         nulls_config = self.config.get("nulls", {})
-        #null_strategy = self.config.get("null_strategy", "fill")
-        #fill_value = self.config.get("fill_value", "UNKNOWN")
-        #keep_duplicates = self.config.get("keep_duplicates", "first")
 
         # 1. Eliminar elementos duplicados de "Transaction ID"
         if dup_config.get("apply", False):
-            if (TRANSACTION_ID in error_report and
-                    DUPLICATED_VALUES_ERROR in error_report[TRANSACTION_ID]):
+            if (
+                TRANSACTION_ID in error_report
+                and DUPLICATED_VALUES_ERROR in error_report[TRANSACTION_ID]
+            ):
                 df_clean = remove_duplicate_rows(
-                    df_clean,
-                    columns=[TRANSACTION_ID],
-                    keep=dup_config.get("keep", "first")
+                    df_clean, columns=[TRANSACTION_ID], keep=dup_config.get("keep", "first")
                 )
 
         # 2. Conversión de columnas a numéricas antes de la imputación
-        # TODO: Falta convertir la columna de fecha (y si se puede "Quantity" a int),
-        #  -> los tipos están en schema.py en la const COLUMN_TYPES
         if types_config.get("apply", False):
             df_clean = apply_schema_types(df_clean, COLUMN_TYPES)
-
-        print(df_clean.info())
 
         # 3. Imputar valores faltantes en "Quantity", "Price Per Unit" y "Total Spent"
         if impute_config.get("apply_amounts", False):
@@ -75,7 +69,8 @@ class DataCleanerDispatcher:
 
         # 4. Manejo de valores nulos restantes según la estrategia definida
         critical_to_drop = [
-            col for col in error_report
+            col
+            for col in error_report
             if NULL_VALUES_ERROR in error_report[col] and col in CRITICAL_COLUMNS
         ]
 
@@ -87,7 +82,8 @@ class DataCleanerDispatcher:
         if nulls_config.get("apply", False):
             allowed_cols = nulls_config.get("columns", [])
             cols_to_fill = [
-                col for col in error_report
+                col
+                for col in error_report
                 if NULL_VALUES_ERROR in error_report.get(col, [])
                 and col in allowed_cols
                 and col not in CRITICAL_COLUMNS
@@ -96,7 +92,7 @@ class DataCleanerDispatcher:
                 df_clean = fill_null_values(
                     df_clean,
                     columns=cols_to_fill,
-                    fill_value=nulls_config.get("fill_value", "UNKNOWN")
+                    fill_value=nulls_config.get("fill_value", "UNKNOWN"),
                 )
 
         return df_clean

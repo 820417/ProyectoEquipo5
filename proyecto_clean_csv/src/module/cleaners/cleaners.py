@@ -3,14 +3,19 @@ from typing import Any, Literal
 import numpy as np
 import pandas as pd
 
+<<<<<<< HEAD
 from src.module.reports import track_changes
 from src.module.reports import track_dtype_changes
+=======
+from module.reports import track_changes
+
+>>>>>>> b6730a1a887a73b6369411bdcdb785234cf2602c
 
 @track_changes
 def remove_duplicate_rows(
     df: pd.DataFrame,
     columns: list[str] | None = None,
-    keep: Literal["first", "last", False] = "first"
+    keep: Literal["first", "last", False] = "first",
 ) -> pd.DataFrame:
     """Elimina filas duplicadas basándose en un subconjunto de columnas.
 
@@ -26,9 +31,7 @@ def remove_duplicate_rows(
 
 @track_changes
 def fill_null_values(
-    df: pd.DataFrame,
-    columns: list[str] | None = None,
-    fill_value: Any = "UNKNOWN"
+    df: pd.DataFrame, columns: list[str] | None = None, fill_value: Any = "UNKNOWN"
 ) -> pd.DataFrame:
     """Rellena los valores nulos con el valor especificado.
 
@@ -46,10 +49,9 @@ def fill_null_values(
 
     return df_clean
 
+
 @track_changes
-def impute_amounts(
-    df: pd.DataFrame
-) -> pd.DataFrame:
+def impute_amounts(df: pd.DataFrame) -> pd.DataFrame:
     """
     Rellena los valores faltantes en las columnas "Quantity", "Price Per Unit" y "Total Spent"
     utilizando las relaciones matemáticas entre ellas.
@@ -70,9 +72,8 @@ def impute_amounts(
         if col not in df_clean.columns:
             raise ValueError(f"Column '{col}' not found in DataFrame")
 
-    df_clean["Total Spent"] = (
-        df_clean["Total Spent"]
-        .fillna(df_clean["Quantity"] * df_clean["Price Per Unit"])
+    df_clean["Total Spent"] = df_clean["Total Spent"].fillna(
+        df_clean["Quantity"] * df_clean["Price Per Unit"]
     )
     df_clean["Quantity"] = (
         df_clean["Quantity"]
@@ -87,11 +88,9 @@ def impute_amounts(
 
     return df_clean
 
+
 @track_changes
-def drop_null_rows(
-    df: pd.DataFrame,
-    columns: list[str] | None = None
-) -> pd.DataFrame:
+def drop_null_rows(df: pd.DataFrame, columns: list[str] | None = None) -> pd.DataFrame:
     """Elimina las filas que contienen valores nulos.
 
     Args:
@@ -99,9 +98,10 @@ def drop_null_rows(
         columns: Si se proporciona, solo busca nulos en estas columnas.
                         Si es None, revisa todas las columnas de la fila.
     """
-    return df.dropna(subset=columns).reset_index(drop=True)
+    return df.replace("UNKNOWN", np.nan).dropna(subset=columns).reset_index(drop=True)
 
 
+<<<<<<< HEAD
 
 @track_dtype_changes
 
@@ -109,6 +109,10 @@ def apply_schema_types(
     df: pd.DataFrame,
     column_types: dict[str, Any]
 ) -> pd.DataFrame:
+=======
+@track_changes
+def apply_schema_types(df: pd.DataFrame, column_types: dict[str, Any]) -> pd.DataFrame:
+>>>>>>> b6730a1a887a73b6369411bdcdb785234cf2602c
     """Fuerza los tipos de datos basándose en el diccionario inyectado.
 
     Resuelve fechas y permite usar el tipo Int64.
@@ -135,10 +139,7 @@ def apply_schema_types(
 
 
 @track_changes
-def impute_category_from_item(
-    df: pd.DataFrame,
-    mapping: dict[str, str]
-) -> pd.DataFrame:
+def impute_category_from_item(df: pd.DataFrame, mapping: dict[str, str]) -> pd.DataFrame:
     """Rellena los nulos de la columna 'Category' basándose en la columna 'Item'
     y un diccionario de mapeo.
     """
