@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from src.module.reports import track_changes
-
+from src.module.reports import track_dtype_changes
 
 @track_changes
 def remove_duplicate_rows(
@@ -102,7 +102,9 @@ def drop_null_rows(
     return df.dropna(subset=columns).reset_index(drop=True)
 
 
-@track_changes
+
+@track_dtype_changes
+
 def apply_schema_types(
     df: pd.DataFrame,
     column_types: dict[str, Any]
