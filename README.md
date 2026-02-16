@@ -249,6 +249,7 @@ El proyecto incluye tests para:
 - Validadores (NULL_VALUES, DUPLICATED_VALUES, TYPE_ERROR)
 - Limpiadores (remove_duplicate, fill_null, impute_amounts, drop_null, apply_schema_types)
 - Transformadores
+- Exportación del csv
 
 ---
 
