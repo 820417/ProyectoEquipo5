@@ -101,10 +101,9 @@ graph TD
     D2 --> E
     D3 --> E
 
-    E --> F[Cleaner Dispatcher]
-    F --> G[Limpieza de Datos]
+    E --> F[Limpieza de Datos]
 
-    G --> H{Errores de Duplicados?}
+    F --> H{Errores de Duplicados?}
     H -->|Sí| H1[Eliminar Duplicados]
     H -->|No| I[Conversión de Tipos]
     H1 --> I
@@ -270,7 +269,7 @@ Detecta si hay valores nulos en cualquier columna del DataFrame y, en caso de ha
 Identifica registros duplicados basándose en la columna `Transaction ID` y, en caso de haber, lo indica en el diccionario de errores con el tipo DUPLICATED_VALUES_ERROR.
 
 #### - TypeValidator
-Verifica que las columnas tengan los tipos de datos correctos según el esquema. Las columnas que no cumplen con el tipo esperado se reportan en el diccionario de errores con el tipo TYPE_ERROR.
+Verifica que las columnas tengan los tipos de datos correctos según el esquema definido. Las columnas que no cumplen con el tipo esperado se reportan en el diccionario de errores con el tipo TYPE_ERROR.
 
 
 ### 3. Limpieza de Datos
