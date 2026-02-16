@@ -7,9 +7,9 @@ from .cleaners import (
 )
 
 __all__ = [
+    "apply_schema_types",
     "drop_null_rows",
     "fill_null_values",
-    "remove_duplicate_rows",
     "impute_amounts",
-    "apply_schema_types",
+    "remove_duplicate_rows",
 ]
