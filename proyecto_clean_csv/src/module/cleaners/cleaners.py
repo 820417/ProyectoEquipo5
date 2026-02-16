@@ -6,9 +6,6 @@ import pandas as pd
 from module.reports import track_changes, track_dtype_changes
 
 
-
-
-
 @track_changes
 def remove_duplicate_rows(
     df: pd.DataFrame,
@@ -99,12 +96,8 @@ def drop_null_rows(df: pd.DataFrame, columns: list[str] | None = None) -> pd.Dat
     return df.replace("UNKNOWN", np.nan).dropna(subset=columns).reset_index(drop=True)
 
 
-
-
 @track_dtype_changes
-
 def apply_schema_types(df: pd.DataFrame, column_types: dict[str, Any]) -> pd.DataFrame:
-
     """Fuerza los tipos de datos basándose en el diccionario inyectado.
 
     Resuelve fechas y permite usar el tipo Int64.
