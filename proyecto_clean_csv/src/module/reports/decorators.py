@@ -77,3 +77,4 @@ def track_dtype_changes(func: Callable) -> Callable:
             )
 
         return result
+    return wrapper
