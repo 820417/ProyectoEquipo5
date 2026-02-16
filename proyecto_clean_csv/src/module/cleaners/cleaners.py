@@ -3,9 +3,8 @@ from typing import Any, Literal
 import numpy as np
 import pandas as pd
 
+from module.reports import track_changes, track_dtype_changes
 
-from src.module.reports import track_changes
-from src.module.reports import track_dtype_changes
 
 
 
