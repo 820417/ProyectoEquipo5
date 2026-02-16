@@ -57,9 +57,6 @@ class ReaderCSVGenerator(ReaderCSV):
         :rtype: pd.DataFrame
         """
 
-        filas = self._read_generator(path)
-        return pd.DataFrame(filas)
-
         try:
             filas = self._read_generator(path)
             return pd.DataFrame(filas)
