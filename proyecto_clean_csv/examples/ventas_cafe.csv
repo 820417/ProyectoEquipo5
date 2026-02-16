@@ -2,6 +2,7 @@ Transaction ID,Item,Quantity,Price Per Unit,Total Spent,Payment Method,Location,
 TXN_1961373,Coffee,2,2.0,4.0,Credit Card,Takeaway,2023-09-08
 TXN_4977031,Cake,4,3.0,12.0,Cash,In-store,2023-05-16
 TXN_4271903,Cookie,4,1.0,ERROR,Credit Card,In-store,2023-07-19
+TXN_4271903,Cookie,5,1.0,ERROR,Credit Card,In-store,2023-07-19
 TXN_7034554,Salad,2,5.0,10.0,UNKNOWN,UNKNOWN,2023-04-27
 TXN_3160411,Coffee,2,2.0,4.0,Digital Wallet,In-store,2023-06-11
 TXN_2602893,Smoothie,5,4.0,20.0,Credit Card,,2023-03-31
