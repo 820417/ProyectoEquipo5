@@ -3,13 +3,13 @@ from typing import Any, Literal
 import numpy as np
 import pandas as pd
 
-<<<<<<< HEAD
+
 from src.module.reports import track_changes
 from src.module.reports import track_dtype_changes
-=======
+
 from module.reports import track_changes
 
->>>>>>> b6730a1a887a73b6369411bdcdb785234cf2602c
+
 
 @track_changes
 def remove_duplicate_rows(
@@ -101,18 +101,12 @@ def drop_null_rows(df: pd.DataFrame, columns: list[str] | None = None) -> pd.Dat
     return df.replace("UNKNOWN", np.nan).dropna(subset=columns).reset_index(drop=True)
 
 
-<<<<<<< HEAD
+
 
 @track_dtype_changes
 
-def apply_schema_types(
-    df: pd.DataFrame,
-    column_types: dict[str, Any]
-) -> pd.DataFrame:
-=======
-@track_changes
 def apply_schema_types(df: pd.DataFrame, column_types: dict[str, Any]) -> pd.DataFrame:
->>>>>>> b6730a1a887a73b6369411bdcdb785234cf2602c
+
     """Fuerza los tipos de datos basándose en el diccionario inyectado.
 
     Resuelve fechas y permite usar el tipo Int64.
