@@ -37,3 +37,10 @@ addopts = "-v"
 [build-system]
 requires = ["setuptools>=65.5.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.pyright]
+pythonVersion = "3.11"
+venvPath = "."
+venv = ".venv"
+include = ["src"]
+exclude = ["**/__pycache__", ".venv"]

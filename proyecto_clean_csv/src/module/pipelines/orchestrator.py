@@ -15,7 +15,7 @@ from module.validators import DuplicateValidator, NullValidator, TypeValidator, 
 logger = logging.getLogger(__name__)
 
 class DataPipelineOrchestrator:
-    def __init__(self, path: str, config_path: str, base_dir: Path):
+    def __init__(self, path: str | Path, config_path: str | Path, base_dir: str | Path) -> None:
         """
         Orquestador del pipeline
 
@@ -23,13 +23,15 @@ class DataPipelineOrchestrator:
         :param config_path: Ruta del archivo de configuración JSON.
         :param base_dir: Ruta base del proyecto para generar archivos de salida.
         """
-        self.path = path
-        self.name = self.path.stem
+        self.path = Path(path)
+        self.name: str = self.path.stem
         self._base_dir = Path(base_dir)
         self.config = self._load_config(config_path)
 
-    def _load_config(self, config_path: str) -> dict:
+    def _load_config(self, config_path: str | Path) -> dict:
         """Lee el archivo config.json y lo convierte en un diccionario."""
+        config_path = Path(config_path)
+
         with Path(config_path).open() as file:
             return json.load(file)
 

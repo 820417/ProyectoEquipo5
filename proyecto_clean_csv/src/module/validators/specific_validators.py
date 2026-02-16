@@ -30,7 +30,8 @@ class NullValidator(Validator):
         if not config.get("validations", {}).get("validate_nulls", False):
             return {}
 
-        errors = {}
+        errors: dict[str, list[str]] = {}
+
         for col in df.columns:
             if df[col].isnull().any():
                 errors.setdefault(col, []).append(NULL_VALUES_ERROR)
@@ -56,7 +57,7 @@ class DuplicateValidator(Validator):
         if not config.get("validations", {}).get("validate_duplicates", False):
             return {}
 
-        errors = {}
+        errors: dict[str, list[str]] = {}
 
         if df[self._key_column].duplicated().any():
             errors.setdefault(self._key_column, []).append(DUPLICATED_VALUES_ERROR)
@@ -86,21 +87,24 @@ class TypeValidator(Validator):
         if not config.get("validations", {}).get("validate_types", False):
             return {}
 
-        errors = {}
+        errors: dict[str, list[str]] = {}
 
         for col, expected_type in self._types.items():
 
             if col not in df.columns:
                 continue
 
+            original = df[col]
+
             if expected_type in ["int", "float"]:
-                converted = pd.to_numeric(df[col], errors="coerce")
-                if converted.isna().sum() > df[col].isna().sum():
+                converted = pd.to_numeric(original, errors="coerce")
+                if converted.isna().sum() > original.isna().sum():
                     errors.setdefault(col, []).append(TYPE_ERROR)
 
             elif expected_type == "datetime":
-                converted = pd.to_datetime(df[col], errors="coerce")
-                if converted.isna().sum() > df[col].isna().sum():
+                original: pd.Series = df[col]
+                converted = pd.to_datetime(original, errors="coerce")
+                if converted.isna().sum() > original.isna().sum():
                     errors.setdefault(col, []).append(TYPE_ERROR)
 
         return errors
