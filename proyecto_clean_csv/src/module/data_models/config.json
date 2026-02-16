@@ -2,7 +2,7 @@
     "validations":{
         "validate_duplicates": true,
         "validate_nulls": true,
-        "validate_types": false
+        "validate_types": true
     },
     "duplicates": {
         "apply": true,
