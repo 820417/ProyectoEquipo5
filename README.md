@@ -316,8 +316,10 @@ Se añade una columna llemada Category en la que se agrupan los productos vendid
 
     track_dtype_changes: Detecta y registra cambios en los tipos de datos de las columnas tras la conversión según el esquema definido.
 
-El resultado es un pipeline totalmente auditable, con un registro detallado de errores y transformaciones en app_log.txt.
+- El resultado es un pipeline totalmente auditable, con un registro detallado de errores y transformaciones en app_log.txt
+
 ---
+
 ## Herramientas de calidad de código
 
 El proyecto utiliza la herramienta **Ruff** para asegurar la calidad del código, siguiendo los siguientes estándares:
